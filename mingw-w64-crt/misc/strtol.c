@@ -3,21 +3,11 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-/*
-    This source code was extracted from the Q8 package created and
-    placed in the PUBLIC DOMAIN by Doug Gwyn <gwyn@arl.mil>
-    last edit:	1999/11/05	gwyn@arl.mil
 
-	Implements subclause 7.8.2 of ISO/IEC 9899:1999 (E).
-
-	This particular implementation requires the matching <inttypes.h>.
-	It also assumes that character codes for A..Z and a..z are in
-	contiguous ascending order; this is true for ASCII but not EBCDIC.
-*/
 #include <stdlib.h>
 #include <errno.h>
 #include <ctype.h>
-#include <inttypes.h>
+#include <limits.h>
 
 /* Helper macros */
 
@@ -30,13 +20,11 @@
 /* validate converted digit character for specific base */
 #define valid(n, b)	((n) >= 0 && (n) < (b))
 
-intmax_t __cdecl __strtoimax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base);
-
-intmax_t
+long
 __cdecl
-__strtoimax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
+__strtol(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
 	{
-	register uintmax_t	accum;	/* accumulates converted value */
+	register unsigned long	accum;	/* accumulates converted value */
 	register int		n;	/* numeral from digit character */
 	int			minus;	/* set iff minus sign seen */
 	int			toobig;	/* set iff value overflows */
@@ -91,7 +79,7 @@ __strtoimax(const char * __restrict__ nptr, char ** __restrict__ endptr, int bas
 	accum = n;
 
 	for ( toobig = 0; n = ToNumber(*nptr), valid(n, base); ++nptr )
-		if ( accum > (uintmax_t)(INTMAX_MAX / base + 2) ) /* major wrap-around */
+		if ( accum > (unsigned long)(LONG_MAX / base + 2) ) /* major wrap-around */
 			toobig = 1;	/* but keep scanning */
 		else
 			accum = base * accum + n;
@@ -101,45 +89,22 @@ __strtoimax(const char * __restrict__ nptr, char ** __restrict__ endptr, int bas
 
 	if ( minus )
 		{
-		if ( accum > (uintmax_t)INTMAX_MAX + 1 )
+		if ( accum > (unsigned long)LONG_MAX + 1 )
 			toobig = 1;
 		}
 	else
-	if ( accum > (uintmax_t)INTMAX_MAX )
+	if ( accum > (unsigned long)LONG_MAX )
 		toobig = 1;
 
 	if ( toobig )
 		{
 		errno = ERANGE;
-		return minus ? INTMAX_MIN : INTMAX_MAX;
+		return minus ? LONG_MIN : LONG_MAX;
 		}
 	else
-		return (intmax_t)(minus ? -accum : accum);
+		return (long)(minus ? -accum : accum);
 	}
 
-intmax_t __attribute__ ((alias ("__strtoimax")))
-__cdecl
-strtoimax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base);
-
-intmax_t (__cdecl *__MINGW_IMP_SYMBOL(strtoimax))(const char * __restrict__, char ** __restrict__, int) = strtoimax;
-
-intmax_t __attribute__ ((alias ("__strtoimax")))
-__cdecl
-__mingw_strtoimax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base);
-
-__int64 __attribute__ ((alias ("__strtoimax")))
-__cdecl
-_strtoi64 (const char* __restrict__ nptr, char ** __restrict__ endptr, int base);
-extern __int64 __attribute__ ((alias (__MINGW64_STRINGIFY(__MINGW_IMP_SYMBOL(strtoimax)))))
-(__cdecl *__MINGW_IMP_SYMBOL(_strtoi64))(const char* __restrict__, char ** __restrict__, int);
-
-long long 
-__cdecl
-__mingw_strtoll (const char* __restrict__ nptr, char ** __restrict__ endptr, int base)
-	__attribute__ ((alias ("__strtoimax")));
-
-long long __attribute__ ((alias ("__strtoimax")))
-__cdecl
-strtoll(const char* __restrict__ nptr, char ** __restrict__ endptr, int base);
-
-long long (__cdecl *__MINGW_IMP_SYMBOL(strtoll))(const char * __restrict__, char ** __restrict__, int) = strtoll;
+long __cdecl __strtol(const char * __restrict__ nptr, char ** __restrict__ endptr, int base);
+long __cdecl __mingw_strtol(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
+    __attribute__((alias("__strtol")));

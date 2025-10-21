@@ -30,9 +30,11 @@
 /* validate converted digit character for specific base */
 #define valid(n, b)	((n) >= 0 && (n) < (b))
 
+uintmax_t __cdecl __strtoumax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base);
+
 uintmax_t
 __cdecl
-strtoumax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
+__strtoumax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
 	{
 	register uintmax_t	accum;	/* accumulates converted value */
 	register uintmax_t	next;	/* for computing next value of accum */
@@ -67,6 +69,8 @@ strtoumax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
             {
 			if ( nptr[1] == 'X' || nptr[1] == 'x' )
 				base = 16;
+			else if ( nptr[1] == 'b' || nptr[1] == 'B' )
+				base = 2;
 			else
 				base = 8;
 		    }
@@ -74,10 +78,14 @@ strtoumax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
 				base = 10;
 		}
 
-    /* optional "0x" or "0X" for base 16 */
+    /* optional "0x" or "0X" for base 16, "0b" or "0B" for base 2 */
     
 	if ( base == 16 && *nptr == '0' && (nptr[1] == 'X' || nptr[1] == 'x') )
 		nptr += 2;		/* skip past this prefix */
+	else if ( base == 2 && *nptr == '0' && (nptr[1] == 'b' || nptr[1] == 'B') )
+		nptr += 2;		/* skip past this prefix */
+
+	/* check whether there is at least one valid digit */
 
 	/* check whether there is at least one valid digit */
 
@@ -85,20 +93,20 @@ strtoumax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
 	++nptr;
 
 	if ( !valid(n, base) )
-		return 0;		/* subject seq. not of expected form */
+		return 0;        /* subject seq. not of expected form */
 
 	accum = n;
 
 	for ( toobig = 0; n = ToNumber(*nptr), valid(n, base); ++nptr )
-		if ( accum > UINTMAX_MAX / base + 1	/* major wrap-around */
-		  || (next = base * accum + n) < accum	/* minor wrap-around */
+		if ( accum > UINTMAX_MAX / base + 1    /* major wrap-around */
+		  || (next = base * accum + n) < accum    /* minor wrap-around */
 		   )
-			toobig = 1;	/* but keep scanning */
+			toobig = 1;    /* but keep scanning */
 		else
 			accum = next;
 
 	if ( endptr != NULL )
-		*endptr = (char *)nptr;	/* points to first not-valid-digit */
+		*endptr = (char *)nptr;    /* points to first not-valid-digit */
 
 	if ( toobig )
 		{
@@ -106,18 +114,33 @@ strtoumax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
 		return UINTMAX_MAX;
 		}
 	else
-		return minus ? -accum : accum;	/* (yes!) */
+		return minus ? -accum : accum;    /* (yes!) */
 	}
-uintmax_t (__cdecl *__MINGW_IMP_SYMBOL(strtoumax))(const char* __restrict__, char ** __restrict__, int) = strtoumax;
 
-unsigned long long __attribute__ ((alias ("strtoumax")))
+uintmax_t __attribute__ ((alias ("__strtoumax")))
 __cdecl
-strtoull (const char* __restrict__ nptr, char ** __restrict__ endptr, int base);
-extern unsigned long long __attribute__ ((alias (__MINGW64_STRINGIFY(__MINGW_IMP_SYMBOL(strtoumax)))))
-(__cdecl *__MINGW_IMP_SYMBOL(strtoull))(const char* __restrict__, char ** __restrict__, int);
+__mingw_strtoumax (const char* __restrict__ nptr, char ** __restrict__ endptr, int base);
+uintmax_t __attribute__ ((alias ("__strtoumax")))
+__cdecl
+strtoumax(const char * __restrict__ nptr, char ** __restrict__ endptr, int base);
 
-unsigned __int64 __attribute__ ((alias ("strtoumax")))
+/* Export import-pointer symbol initialized to the public entry so headers prefer CRT-provided symbol */
+uintmax_t (__cdecl *__MINGW_IMP_SYMBOL(strtoumax))(const char * __restrict__, char ** __restrict__, int) = strtoumax;
+
+__MINGW_EXTENSION unsigned __int64 __attribute__ ((alias ("__strtoumax")))
 __cdecl
 _strtoui64 (const char* __restrict__ nptr, char ** __restrict__ endptr, int base);
+
 extern unsigned __int64 __attribute__ ((alias (__MINGW64_STRINGIFY(__MINGW_IMP_SYMBOL(strtoumax)))))
 (__cdecl *__MINGW_IMP_SYMBOL(_strtoui64))(const char* __restrict__, char ** __restrict__, int);
+
+/* Provide mingw-prefixed wrapper for unsigned long long based on __strtoumax */
+unsigned long long __attribute__ ((alias ("__strtoumax")))
+__cdecl
+__mingw_strtoull (const char* __restrict__ nptr, char ** __restrict__ endptr, int base);
+
+unsigned long long __attribute__ ((alias ("__strtoumax")))
+__cdecl
+strtoull(const char* __restrict__ nptr, char ** __restrict__ endptr, int base);
+
+unsigned long long (__cdecl *__MINGW_IMP_SYMBOL(strtoull))(const char * __restrict__, char ** __restrict__, int) = strtoull;

@@ -32,9 +32,11 @@
 /* validate converted digit character for specific base */
 #define valid(n, b)	((n) >= 0 && (n) < (b))
 
+uintmax_t __cdecl __wcstoumax(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int base);
+
 uintmax_t
 __cdecl
-wcstoumax(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int base)
+__wcstoumax(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int base)
 	{
 	register uintmax_t	accum;	/* accumulates converted value */
 	register uintmax_t	next;	/* for computing next value of accum */
@@ -69,16 +71,22 @@ wcstoumax(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int
             {
 			if ( nptr[1] == L'X' || nptr[1] == L'x' )
 				base = 16;
+			else if ( nptr[1] == L'b' || nptr[1] == L'B' )
+				base = 2;
 			else
 				base = 8;
             }
 		else
 				base = 10;
         }
-	/* optional "0x" or "0X" for base 16 */
+	/* optional "0x" or "0X" for base 16, "0b" or "0B" for base 2 */
 
 	if ( base == 16 && *nptr == L'0'
 	  && (nptr[1] == L'X' || nptr[1] == L'x')
+	   )
+		nptr += 2;		/* skip past this prefix */
+	else if ( base == 2 && *nptr == L'0'
+	  && (nptr[1] == L'b' || nptr[1] == L'B')
 	   )
 		nptr += 2;		/* skip past this prefix */
 
@@ -111,6 +119,9 @@ wcstoumax(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int
 	else
 		return minus ? -accum : accum;	/* (yes!) */
 	}
+uintmax_t __attribute__ ((alias ("__wcstoumax")))
+__cdecl
+wcstoumax(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int base);
 uintmax_t (__cdecl *__MINGW_IMP_SYMBOL(wcstoumax))(const wchar_t * __restrict__, wchar_t ** __restrict__, int) = wcstoumax;
 
 unsigned long long __attribute__ ((alias ("wcstoumax")))
@@ -119,8 +130,18 @@ wcstoull (const wchar_t* __restrict__ nptr, wchar_t ** __restrict__ endptr, int 
 extern unsigned long long __attribute__ ((alias (__MINGW64_STRINGIFY(__MINGW_IMP_SYMBOL(wcstoumax)))))
 (__cdecl *__MINGW_IMP_SYMBOL(wcstoull))(const wchar_t * __restrict__, wchar_t ** __restrict__, int);
 
+uintmax_t __cdecl __wcstoumax(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int base);
+
 unsigned long long __attribute__ ((alias ("wcstoumax")))
 __cdecl
 _wcstoui64 (const wchar_t* __restrict__ nptr, wchar_t ** __restrict__ endptr, int base);
 extern unsigned long long __attribute__ ((alias (__MINGW64_STRINGIFY(__MINGW_IMP_SYMBOL(wcstoumax)))))
 (__cdecl *__MINGW_IMP_SYMBOL(_wcstoui64))(const wchar_t * __restrict__, wchar_t ** __restrict__, int);
+
+uintmax_t __attribute__ ((alias ("__wcstoumax")))
+__cdecl
+__mingw_wcstoumax (const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int base);
+
+unsigned long long __attribute__ ((alias ("__wcstoumax")))
+__cdecl
+__mingw_wcstoull (const wchar_t* __restrict__ nptr, wchar_t ** __restrict__ endptr, int base);

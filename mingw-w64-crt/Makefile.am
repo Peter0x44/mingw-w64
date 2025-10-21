@@ -1195,6 +1195,8 @@ src_libmingwex=\
   misc/tsearch.c         misc/twalk.c           \
   misc/wcstof.c \
   misc/wcstold.c \
+  misc/strtol.c          misc/strtoul.c             misc/wcstol.c           misc/wcstoul.c \
+  misc/strtoimax.c       misc/strtoumax.c           misc/wcstoimax.c        misc/wcstoumax.c \
   misc/wdirent.c         misc/winbs_uint64.c        misc/winbs_ulong.c      misc/winbs_ushort.c    \
   misc/btowc.c           misc/wctob.c \
   misc/wmemchr.c         misc/wmemcmp.c             misc/wmemcpy.c          misc/wmemmove.c              misc/wmempcpy.c        \

@@ -333,6 +333,36 @@ imaxdiv_t __cdecl imaxdiv (intmax_t numer, intmax_t denom);
 
 /* 7.8.2 Conversion functions for greatest-width integer types */
 
+intmax_t __cdecl __mingw_strtoimax (const char* __restrict__ nptr, char** __restrict__ endptr, int base);
+uintmax_t __cdecl __mingw_strtoumax (const char* __restrict__ nptr, char** __restrict__ endptr, int base);
+intmax_t __cdecl __mingw_wcstoimax (const wchar_t* __restrict__ nptr, wchar_t** __restrict__ endptr, int base);
+uintmax_t __cdecl __mingw_wcstoumax (const wchar_t* __restrict__ nptr, wchar_t** __restrict__ endptr, int base);
+
+#if defined(__USE_MINGW_STRTOX)
+__mingw_ovr
+intmax_t __cdecl strtoimax (const char* __restrict__ nptr, char** __restrict__ endptr, int base)
+{
+	return __mingw_strtoimax(nptr, endptr, base);
+}
+
+__mingw_ovr
+uintmax_t __cdecl strtoumax (const char* __restrict__ nptr, char** __restrict__ endptr, int base)
+{
+	return __mingw_strtoumax(nptr, endptr, base);
+}
+
+__mingw_ovr
+intmax_t __cdecl wcstoimax (const wchar_t* __restrict__ nptr, wchar_t** __restrict__ endptr, int base)
+{
+	return __mingw_wcstoimax(nptr, endptr, base);
+}
+
+__mingw_ovr
+uintmax_t __cdecl wcstoumax (const wchar_t* __restrict__ nptr, wchar_t** __restrict__ endptr, int base)
+{
+	return __mingw_wcstoumax(nptr, endptr, base);
+}
+#else /* defined(__USE_MINGW_STRTOX) */
 intmax_t __cdecl strtoimax (const char* __restrict__ nptr,
                             char** __restrict__ endptr, int base);
 uintmax_t __cdecl strtoumax (const char* __restrict__ nptr,
@@ -342,9 +372,10 @@ intmax_t __cdecl wcstoimax (const wchar_t* __restrict__ nptr,
                             wchar_t** __restrict__ endptr, int base);
 uintmax_t __cdecl wcstoumax (const wchar_t* __restrict__ nptr,
 			     wchar_t** __restrict__ endptr, int base);
+#endif
 
 #ifdef	__cplusplus
 }
 #endif
 
-#endif /* ndef _INTTYPES_H */
+#endif /* ifndef _INTTYPES_H */
