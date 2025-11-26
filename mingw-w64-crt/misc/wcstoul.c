@@ -10,6 +10,8 @@
 #include <wchar.h>
 #include <limits.h>
 
+unsigned long __cdecl __wcstoul(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int base);
+
 /* Helper macros */
 
 /* convert digit character to number, in any base */
@@ -109,8 +111,6 @@ __wcstoul(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int
 	else
 		return minus ? -accum : accum;
 	}
-
-unsigned long __cdecl __wcstoul(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int base);
 
 unsigned long __cdecl __mingw_wcstoul(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr, int base)
     __attribute__((alias("__wcstoul")));

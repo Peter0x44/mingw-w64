@@ -9,6 +9,8 @@
 #include <ctype.h>
 #include <limits.h>
 
+long __cdecl __strtol(const char * __restrict__ nptr, char ** __restrict__ endptr, int base);
+
 /* Helper macros */
 
 /* convert digit character to number, in any base */
@@ -105,6 +107,5 @@ __strtol(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
 		return (long)(minus ? -accum : accum);
 	}
 
-long __cdecl __strtol(const char * __restrict__ nptr, char ** __restrict__ endptr, int base);
 long __cdecl __mingw_strtol(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
     __attribute__((alias("__strtol")));

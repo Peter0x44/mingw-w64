@@ -9,6 +9,8 @@
 #include <ctype.h>
 #include <limits.h>
 
+unsigned long __cdecl __strtoul(const char * __restrict__ nptr, char ** __restrict__ endptr, int base);
+
 /* Helper macros */
 
 /* convert digit character to number, in any base */
@@ -105,8 +107,6 @@ __strtoul(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
 	else
 		return minus ? -accum : accum;
 	}
-
-unsigned long __cdecl __strtoul(const char * __restrict__ nptr, char ** __restrict__ endptr, int base);
 
 unsigned long __cdecl __mingw_strtoul(const char * __restrict__ nptr, char ** __restrict__ endptr, int base)
     __attribute__((alias("__strtoul")));
