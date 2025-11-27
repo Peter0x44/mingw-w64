@@ -462,6 +462,7 @@ void test_strtoll_hex(void)
     long long result;
 
     result = strtoll("0x7FFFFFFFFFFFFFFF", &endptr, 0);
+    __builtin_printf("%lld\n", result);
     assert(result == 0x7FFFFFFFFFFFFFFFLL);
 
     result = strtoll("DEADBEEF", &endptr, 16);
