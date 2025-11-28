@@ -998,6 +998,8 @@ __MINGW_ASM_CALL(__mingw_vsnwprintf);
   double __cdecl __mingw_wcstod(const wchar_t * __restrict__ _Str,wchar_t ** __restrict__ _EndPtr);
   float __cdecl __mingw_wcstof(const wchar_t * __restrict__ nptr, wchar_t ** __restrict__ endptr);
   long double __cdecl __mingw_wcstold(const wchar_t * __restrict__, wchar_t ** __restrict__);
+  long __cdecl __mingw_wcstol(const wchar_t * __restrict__, wchar_t ** __restrict__, int);
+  unsigned long __cdecl __mingw_wcstoul(const wchar_t * __restrict__, wchar_t ** __restrict__, int);
 
 #if defined(__USE_MINGW_STRTOX) && !defined(_UCRT)
   __mingw_ovr
@@ -1016,9 +1018,20 @@ __MINGW_ASM_CALL(__mingw_vsnwprintf);
 #if !defined __NO_ISOCEXT /* in libmingwex.a */
   long double __cdecl wcstold (const wchar_t * __restrict__, wchar_t ** __restrict__);
 #endif /* __NO_ISOCEXT */
+#if defined(__USE_MINGW_STRTOX)
+  __mingw_ovr
+  long __cdecl wcstol(const wchar_t * __restrict__ _Str,wchar_t ** __restrict__ _EndPtr,int _Radix){
+    return __mingw_wcstol(_Str,_EndPtr,_Radix);
+  }
+  __mingw_ovr
+  unsigned long __cdecl wcstoul(const wchar_t * __restrict__ _Str,wchar_t ** __restrict__ _EndPtr,int _Radix){
+    return __mingw_wcstoul(_Str,_EndPtr,_Radix);
+  }
+#else
   long __cdecl wcstol(const wchar_t * __restrict__ _Str,wchar_t ** __restrict__ _EndPtr,int _Radix);
-  _CRTIMP long __cdecl _wcstol_l(const wchar_t * __restrict__ _Str,wchar_t ** __restrict__ _EndPtr,int _Radix,_locale_t _Locale);
   unsigned long __cdecl wcstoul(const wchar_t * __restrict__ _Str,wchar_t ** __restrict__ _EndPtr,int _Radix);
+#endif /* defined(__USE_MINGW_STRTOX) */
+  _CRTIMP long __cdecl _wcstol_l(const wchar_t * __restrict__ _Str,wchar_t ** __restrict__ _EndPtr,int _Radix,_locale_t _Locale);
   _CRTIMP unsigned long __cdecl _wcstoul_l(const wchar_t * __restrict__ _Str,wchar_t ** __restrict__ _EndPtr,int _Radix,_locale_t _Locale);
   _CRTIMP wchar_t *__cdecl _wgetenv(const wchar_t *_VarName) __MINGW_ATTRIB_DEPRECATED_SEC_WARN;
 #ifndef _CRT_WSYSTEM_DEFINED
