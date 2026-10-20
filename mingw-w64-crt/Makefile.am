@@ -1447,7 +1447,8 @@ if !W32API
 crt32_DATA = \
   lib32/crt1.o    lib32/crt2.o     lib32/crt1u.o   lib32/crt2u.o    lib32/dllcrt1.o    lib32/dllcrt2.o \
   lib32/CRT_fp8.o lib32/CRT_fp10.o lib32/txtmode.o lib32/binmode.o  lib32/crtbegin.o   lib32/crtend.o \
-  lib32/gcrt0.o   lib32/gcrt1.o    lib32/gcrt2.o   lib32/CRT_glob.o lib32/CRT_noglob.o
+  lib32/gcrt0.o   lib32/gcrt1.o    lib32/gcrt2.o   lib32/CRT_glob.o lib32/CRT_noglob.o \
+  lib32/CRT_fp4.o
 else
 crt32_DATA =
 endif
@@ -1871,7 +1872,8 @@ if !W32API
 crt64_DATA = \
   lib64/crt1.o    lib64/crt2.o     lib64/crt1u.o   lib64/crt2u.o   lib64/dllcrt1.o lib64/dllcrt2.o \
   lib64/CRT_fp8.o lib64/CRT_fp10.o lib64/txtmode.o lib64/binmode.o lib64/crtbegin.o lib64/crtend.o \
-  lib64/gcrt0.o   lib64/gcrt1.o    lib64/gcrt2.o   lib64/CRT_glob.o lib64/CRT_noglob.o
+  lib64/gcrt0.o   lib64/gcrt1.o    lib64/gcrt2.o   lib64/CRT_glob.o lib64/CRT_noglob.o \
+  lib64/CRT_fp4.o
 else
 crt64_DATA =
 endif
@@ -2236,7 +2238,8 @@ if !W32API
 crt32_DATA = \
   libarm32/crt1.o    libarm32/crt2.o     libarm32/crt1u.o   libarm32/crt2u.o    libarm32/dllcrt1.o    libarm32/dllcrt2.o \
   libarm32/CRT_fp8.o libarm32/txtmode.o  libarm32/binmode.o libarm32/crtbegin.o libarm32/crtend.o \
-  libarm32/gcrt0.o   libarm32/gcrt1.o    libarm32/gcrt2.o   libarm32/CRT_glob.o libarm32/CRT_noglob.o
+  libarm32/gcrt0.o   libarm32/gcrt1.o    libarm32/gcrt2.o   libarm32/CRT_glob.o libarm32/CRT_noglob.o \
+  libarm32/CRT_fp4.o
 else
 crt32_DATA =
 endif
@@ -2546,7 +2549,8 @@ if !W32API
 crt64_DATA = \
   libarm64/crt1.o    libarm64/crt2.o     libarm64/crt1u.o   libarm64/crt2u.o    libarm64/dllcrt1.o    libarm64/dllcrt2.o \
   libarm64/CRT_fp8.o libarm64/txtmode.o  libarm64/binmode.o libarm64/crtbegin.o libarm64/crtend.o \
-  libarm64/gcrt0.o   libarm64/gcrt1.o    libarm64/gcrt2.o   libarm64/CRT_glob.o libarm64/CRT_noglob.o
+  libarm64/gcrt0.o   libarm64/gcrt1.o    libarm64/gcrt2.o   libarm64/CRT_glob.o libarm64/CRT_noglob.o \
+  libarm64/CRT_fp4.o
 else
 crt64_DATA =
 endif
@@ -4583,6 +4587,7 @@ EXTRA_DIST += \
   crt/crtdll.c \
   crt/crtend.c \
   crt/crtexe.c \
+  crt/CRT_fp4.c \
   crt/CRT_fp8.c \
   crt/CRT_fp10.c \
   crt/CRT_glob.c \
