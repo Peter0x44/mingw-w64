@@ -107,6 +107,7 @@ testcase_progs = \
   t_expm1 \
   t_fctptr \
   t_fesetenv \
+  t_fesetenv_fp8 \
   t_findfirst \
   t_float  \
   t_fmod \
@@ -250,6 +251,9 @@ endif
 # Test only for -static -lgcc
 t_global_ctors_LDFLAGS = $(AM_LDFLAGS) -static
 t_global_ctors_LDADD = @TARGET_LIBGCC_FILE_NAME@ $(LDADD)
+
+# t_fesetenv_fp8 uses the _fpreset from CRT_fp8.o (53-bit x87 precision)
+t_fesetenv_fp8_LDADD = -l:CRT_fp8.o $(LDADD)
 
 # Compile t_intrinc in C99 mode
 t_intrinc_CFLAGS = -std=c99 $(AM_CFLAGS)
