@@ -1,12 +1,18 @@
 #define _GNU_SOURCE /* for feenableexcept and fegetexcept */
 #include <fenv.h>
 #include <stdio.h>
+#include <string.h>
 
 /* mingw-w64 headers */
 #include "libtest.h"
 
 #if defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__))
 #define TEST_X86 1
+
+/* x87 control word set by _fpreset; t_fesetenv_fp*.c override it.  */
+#ifndef EXPECT_X87_CW
+#define EXPECT_X87_CW 0x037f
+#endif
 
 #if defined(__i386__) && !defined(__SSE__)
 int __mingw_has_sse(void);
@@ -71,7 +77,7 @@ static void check_default_environment(void)
   CHECK(fegetexcept() == 0);
   CHECK(fetestexcept(FE_ALL_EXCEPT) == 0);
 #ifdef TEST_X86
-  CHECK(get_x87_cw() == 0x037f);
+  CHECK(get_x87_cw() == EXPECT_X87_CW);
   if (has_sse())
     CHECK(get_mxcsr() == 0x1f80);
 #endif
@@ -80,6 +86,19 @@ static void check_default_environment(void)
 int main()
 {
   mingw_test_init();
+
+  /* fegetenv at startup matches *FE_DFL_ENV. */
+  {
+    fenv_t env;
+
+    CHECK(fegetenv(&env) == 0);
+    CHECK(memcmp(&env, FE_DFL_ENV, sizeof(env)) == 0);
+    if (memcmp(&env, FE_DFL_ENV, sizeof(env)) != 0)
+      printf("startup environment { %#lx, %#lx }, *FE_DFL_ENV { %#lx, %#lx }\n",
+             (unsigned long) env._Fe_ctl, (unsigned long) env._Fe_stat,
+             (unsigned long) FE_DFL_ENV->_Fe_ctl,
+             (unsigned long) FE_DFL_ENV->_Fe_stat);
+  }
 
   /* fesetenv(FE_DFL_ENV) restores the startup environment of both the x87
      and the SSE unit. */
@@ -114,6 +133,7 @@ int main()
     CHECK(got_cw == cw);
     CHECK(got_mxcsr == 0);
   }
+#endif
 
   /* A copy of *FE_DFL_ENV selects the startup environment too. */
   {
@@ -123,7 +143,6 @@ int main()
     CHECK(fesetenv(&env) == 0);
     check_default_environment();
   }
-#endif
 
   return failed;
 }
